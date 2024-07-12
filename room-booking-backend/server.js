@@ -17,11 +17,11 @@ app.post("/api/room", (req, res) => {
       .json({ message: "All fields (num, purp, club) are required" });
   }
 
-  const newBooking = { id: uuidv4(), num, purp, club };
-  bookings.push(newBooking);
+  const newroom = { id: uuidv4(), num, purp, club };
+  bookings.push(newroom);
   res
     .status(201)
-    .json({ message: "Room booked successfully", booking: newBooking });
+    .json({ message: "Room booked successfully", booking: newroom });
 });
 
 app.get("/api/bookings", (req, res) => {

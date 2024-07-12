@@ -2,86 +2,96 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function App() {
-  const [num, setNum] = useState("");
-  const [purp, setPurp] = useState("");
-  const [club, setClub] = useState("");
-  const [bookings, setBookings] = useState([]);
-  const [reply, setReply] = useState("");
+  // state variables for inputs
+  const [num, setnum] = useState(""); // Room number
+  const [purp, setpurp] = useState(""); // Purpose
+  const [club, setclubname] = useState(""); // Club 
+  const [bookings, setbookings] = useState([]); // List of bookings
+  const [reply, setreply] = useState(""); // Response reply
 
-  const fetchBookings = () => {
+  // Function to fetch all bookings from the server
+  const fetch = () => {
     axios
-      .get("http://localhost:5000/api/bookings")
+      .get("http://localhost:5000/api/bookings") // GET request to fetch bookings
       .then((response) => {
-        setBookings(response.data);
+        setbookings(response.data); // Update state with fetched bookings
       })
       .catch((error) => {
-        setReply("Error fetching bookings");
+        setreply("Error fetching bookings"); // Error handling
       });
   };
 
+  // Fetch bookings on component mount
   useEffect(() => {
-    fetchBookings();
+    fetch();
   }, []);
 
-  const bookRoom = () => {
-    const bookingDetails = { num, purp, club };
+  // Function to book a room
+  const book = () => {
+    const bookingDetails = { num, purp, club }; // Create booking details object
     axios
-      .post("http://localhost:5000/api/room", bookingDetails)
+      .post("http://localhost:5000/api/room", bookingDetails) // POST request to book a room
       .then((response) => {
-        setReply(response.data.message);
-        setNum("");
-        setPurp("");
-        setClub("");
-        fetchBookings();
+        setreply(response.data.message); // Display response message
+        setnum(""); // Clear room number input
+        setpurp(""); // Clear purpose input
+        setclubname(""); // Clear club name input
+        fetch(); // Refresh bookings list
       })
       .catch((error) => {
-        setReply("Error booking room");
+        setreply("Error booking room"); // Error handling
       });
   };
-  const delroom=(id)=>{
+
+  // Function to delete a booking
+  const delroom = (id) => {
     axios
-      .delete(`http://localhost:5000/api/room/${id}`)
-      .then((reponse)=>{
-        setReply(reponse.data.message)
-        fetchBookings()
-        
-        fetchBookings()
+      .delete(`http://localhost:5000/api/room/${id}`) // del request to delete a booking
+      .then((response) => {
+        setreply(response.data.message); // Display response message
+        fetch(); //  bookings list
       })
-      .catch((error)=>{
-        setReply("Error in deleting")
-      })
-  }
+      .catch((error) => {
+        setreply("Error in deleting"); // Error handling
+      });
+  };
 
   return (
     <div className="App">
       <h1>Room Booking App</h1>
       <div>
+        {/* Input for room number */}
         <input
           type="text"
           placeholder="Room Number"
           value={num}
-          onChange={(e) => setNum(e.target.value)}
+          onChange={(e) => setnum(e.target.value)}
         />
+        {/* Input for purpose */}
         <input
           type="text"
           placeholder="Purpose of Booking"
           value={purp}
-          onChange={(e) => setPurp(e.target.value)}
+          onChange={(e) => setpurp(e.target.value)}
         />
+        {/* Input for club */}
         <input
           type="text"
           placeholder="Club Name"
           value={club}
-          onChange={(e) => setClub(e.target.value)}
+          onChange={(e) => setclubname(e.target.value)}
         />
-        <button onClick={bookRoom}>Book Room</button>
+        {/* Button to book room */}
+        <button onClick={book}>Book Room</button>
       </div>
+
       <p>{reply}</p>
-      <a href="">Click me!!</a>
+      {/* List of bookings */}
       <ul>
         {bookings.map((booking) => (
           <li key={booking.id}>
-            Room : {booking.num} - {booking.purp} - {booking.club} <button onClick={()=>delroom(booking.id)}>Delete</button>
+            Room : {booking.num} - {booking.purp} - {booking.club}{" "}
+            <button onClick={() => delroom(booking.id)}>Delete</button>
           </li>
         ))}
       </ul>
